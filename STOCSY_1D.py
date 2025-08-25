@@ -21,7 +21,7 @@ def stocsy(folder_path):
     plt.show()
 
     # Find peaks in mean spectrum 
-    sum_spectrum= data.sum(axis=1) # Sum all data to obtine mean spectra
+    sum_spectrum= data.sum(axis=1) # Sum all data to obtain mean spectra
 
     # Figure mean spectra
     plt.figure()
@@ -55,7 +55,7 @@ def stocsy(folder_path):
     plt.gca().invert_xaxis()
     plt.show()
 
-    # Calculate coariance matrix and correlation 
+    # Calculate covariance matrix and correlation 
     cov_matrix,corr_matrix,f2_list= cov_corr_matrix(data, index_peaks,f2) # Input: data matrix, index of peaks and f2
 
     # Index position 
@@ -67,7 +67,7 @@ def stocsy(folder_path):
 
 
     # Draft
-    # If you want to do cov and correlation of full matrix 
+    # If you want to do cov and correlation of the full matrix 
     # cov_matrix = np.cov(data_invert, rowvar=0)
     # corr_matrix = np.corrcoef(data_invert, rowvar=False)
 
@@ -135,7 +135,7 @@ def csv_read_1H(folder_path):
     for file in folder_path.glob("*.csv"):  # Find .csv files in the same directory 
         df= pd.read_csv(file, delimiter="\t")   # Read .csv. Output: pandas dataframe. It is a two-dimensional, size-mutable.
         intensity= df.iloc[:,1] # iloc to select rows or columns based  on their numerical position
-        all_spectra.append(intensity)  # Insert each spectra in all spectra list. 
+        all_spectra.append(intensity)  # Insert each spectrum in the all_spectra list. 
 
     f2= df.iloc[:,0] # Select f2 
     spectra_df= pd.DataFrame(all_spectra).transpose() # matrix in nx len(f2)
@@ -148,12 +148,12 @@ def csv_read_1H(folder_path):
 def cov_corr_matrix(data, index_peaks,f2):
     # Andres Charris
     """ Input:
-            data: data size vxn where n is sample number a v intensities
+            data: data size vxn where n is the sample number and v intensities
             index_peaks: index of selected peaks in f2
             f2: chemical shift vector
     """
-    data_invert= data.transpose()  # data is row matrix vxn, where n y sample number and v is intensity
-    variables_selected= data_invert[:,index_peaks] # Variable selected. These variable are peaks in mean spectrum
+    data_invert= data.transpose()  # data is a row matrix vxn, where n is the sample number and v is the intensity
+    variables_selected= data_invert[:,index_peaks] # Variable selected. These variables are peaks in the mean spectrum
     n= len(data_invert[:,1])
     mean_data= np.mean(data_invert, axis=0) # Mean of data
     repmat_mean= numpy.matlib.repmat(mean_data, n,1) # Repmat values of mean to subtract
@@ -163,7 +163,7 @@ def cov_corr_matrix(data, index_peaks,f2):
     cov_matrix= (1/(n-1))*np.dot(mean_centered_invert, variables_mean_centered) # Covariance XXT
     std_data= np.std(data_invert,axis=0, ddof=1) # Standar deviation of all variable 
     std_data_peaks= np.std(variables_selected,axis=0, ddof=1) #  Standar deviation of variable selected
-    iner_sdt= np.outer(std_data, std_data_peaks) # Pint by point product stdx*stdy. Product of std from all data and variable selected
+    iner_sdt= np.outer(std_data, std_data_peaks) # Pint by point product stdx*stdy. Product of std from all data and variables selected
     corr_matrix= np.divide(cov_matrix,iner_sdt) # Correlation amtrix calculation
     f2_list= f2.flatten().tolist()   # f2 as a list of values
     return cov_matrix, corr_matrix,f2_list    # Return covariance correlation and matrix
